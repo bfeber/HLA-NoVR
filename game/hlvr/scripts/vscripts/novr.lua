@@ -57,8 +57,6 @@ if GlobalSys:CommandLineCheck("-novr") then
         if GetPhysVelocity(player).z < -450 then
             SendToConsole("ent_fire !player SetHealth 0")
         end
-
-        print("[GameMenu] player_health " .. info.health)
     end, nil)
 
     if entity_killed_ev ~= nil then
@@ -211,38 +209,38 @@ if GlobalSys:CommandLineCheck("-novr") then
                         DoEntFireByInstanceHandle(ent, "BeginHack", "", 0, nil, nil)
                         
                         if not vlua.find(name, "cshield") and not vlua.find(name, "switch_box") then
-                            if parent:GetModelName() == "models/props_combine/combine_lockers/combine_locker_doors.vmdl" then
-                                player:SetThink(function()
-                                    if GetMapName() == "a2_quarantine_entrance" then
-                                        SendToConsole("ent_fire text_hacking_puzzle_trace ShowMessage")
-                                        SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
-                                    end
+                            -- if parent:GetModelName() == "models/props_combine/combine_lockers/combine_locker_doors.vmdl" then
+                            --     player:SetThink(function()
+                            --         if GetMapName() == "a2_quarantine_entrance" then
+                            --             SendToConsole("ent_fire text_hacking_puzzle_trace ShowMessage")
+                            --             SendToConsole("snd_sos_start_soundevent Instructor.StartLesson")
+                            --         end
 
-                                    ent = Entities:FindByClassname(nil, "prop_hlvr_holo_hacking_sphere_trace")
-                                    SendToConsole("fadein 0.2")
-                                    DoEntFireByInstanceHandle(ent, "Use", "", 0, player, player)
-                                    local angles = player:GetAngles()
-                                    player:SetAngles(angles.x, angles.y + 180, angles.z)
-                                    player:SetThink(function()
-                                        SendToConsole("+iv_use;-iv_use")
-                                    end, "HideOrb1", 0.02)
-                                    player:SetThink(function()
-                                        player:SetAngles(angles.x, angles.y, angles.z)
-                                    end, "HideOrb2", 0.04)
-                                    player:SetThink(function()
-                                        if player:GetVelocity().z == 0 then
-                                            SendToConsole("ent_fire player_speedmod ModifySpeed 0")
-                                            return nil
-                                        end
-                                        return 0
-                                    end, "StopPlayerOnLand", 0)
-                                    print("[GameMenu] hacking_puzzle_trace")
-                                end, "HackingPuzzleTrace", 2.5)
-                            else
-                                DoEntFireByInstanceHandle(ent, "EndHack", "", 1.8, nil, nil)
-                                ent:FireOutput("OnHackSuccess", nil, nil, nil, 1.8)
-                                ent:FireOutput("OnPuzzleSuccess", nil, nil, nil, 1.8)
-                            end
+                            --         ent = Entities:FindByClassname(nil, "prop_hlvr_holo_hacking_sphere_trace")
+                            --         SendToConsole("fadein 0.2")
+                            --         DoEntFireByInstanceHandle(ent, "Use", "", 0, player, player)
+                            --         local angles = player:GetAngles()
+                            --         player:SetAngles(angles.x, angles.y + 180, angles.z)
+                            --         player:SetThink(function()
+                            --             SendToConsole("+iv_use;-iv_use")
+                            --         end, "HideOrb1", 0.02)
+                            --         player:SetThink(function()
+                            --             player:SetAngles(angles.x, angles.y, angles.z)
+                            --         end, "HideOrb2", 0.04)
+                            --         player:SetThink(function()
+                            --             if player:GetVelocity().z == 0 then
+                            --                 SendToConsole("ent_fire player_speedmod ModifySpeed 0")
+                            --                 return nil
+                            --             end
+                            --             return 0
+                            --         end, "StopPlayerOnLand", 0)
+                            --         print("[GameMenu] hacking_puzzle_trace")
+                            --     end, "HackingPuzzleTrace", 2.5)
+                            -- else
+                            DoEntFireByInstanceHandle(ent, "EndHack", "", 1.8, nil, nil)
+                            ent:FireOutput("OnHackSuccess", nil, nil, nil, 1.8)
+                            ent:FireOutput("OnPuzzleSuccess", nil, nil, nil, 1.8)
+                            -- end
                         end
                         return
                     end
@@ -255,10 +253,6 @@ if GlobalSys:CommandLineCheck("-novr") then
                 end
             end
         end
-    end, "", 0)
-
-    Convars:RegisterCommand("main_menu_exec", function()
-        DoIncludeScript("main_menu_exec.lua", nil)
     end, "", 0)
 
     Convars:RegisterCommand("toggle_noclip", function()
@@ -1010,8 +1004,8 @@ if GlobalSys:CommandLineCheck("-novr") then
             SendToConsole("hidehud 96")
             SendToConsole("mouse_disableinput 1")
             SendToConsole("bind " .. PRIMARY_ATTACK .. " +use")
+            SendToConsole("bind " .. INTERACT .. " +use")
             SendToConsole("bind " .. CROUCH .. " \"\"")
-            SendToConsole("bind PAUSE main_menu_exec")
             if not loading_save_file then
                 SendToConsole("ent_fire player_speedmod ModifySpeed 0")
                 SendToConsole("setpos 0 -6154 6.473839")
@@ -1032,14 +1026,6 @@ if GlobalSys:CommandLineCheck("-novr") then
             ent = Entities:FindByName(nil, "startup_relay")
             ent:RedirectOutput("OnTrigger", "GoToMainMenu", ent)
 
-            if not GlobalSys:CommandLineCheck("-condebug") then
-                local ent = SpawnEntityFromTableSynchronous("game_text", {["effect"]=2, ["spawnflags"]=1, ["color"]="230 230 230", ["color2"]="0 0 0", ["fadein"]=0, ["fadeout"]=0.15, ["fxtime"]=0.25, ["holdtime"]=20, ["x"]=-1, ["y"]=0.6})
-                DoEntFireByInstanceHandle(ent, "SetText", "The game needs to be started from the launcher!", 0, nil, nil)
-                DoEntFireByInstanceHandle(ent, "Display", "", 0, nil, nil)
-                ent:SetThink(function()
-                    SendToConsole("host_timescale 0")
-                end, "", 0.02)
-            end
         else
             SendToConsole("binddefaults")
             SendToConsole("unbind TAB")
@@ -1345,12 +1331,12 @@ if GlobalSys:CommandLineCheck("-novr") then
             if not loading_save_file then
                 ViewmodelAnimation_LevelChange()
             end
-            HUDHearts_StartupPreparations()
+            --HUDHearts_StartupPreparations()
             ViewmodelAnimation_ADSZoom()
 
             if is_on_map_or_later("a2_quarantine_entrance") then
                 ent = Entities:GetLocalPlayer()
-                HUDHearts_StartUpdateLoop()
+                --HUDHearts_StartUpdateLoop()
                 WristPockets_StartUpdateLoop()
 
                 -- Resin hud
@@ -1448,7 +1434,7 @@ if GlobalSys:CommandLineCheck("-novr") then
 
                 -- Show hud hearts if player picked up the gravity gloves
                 if ent:Attribute_GetIntValue("gravity_gloves", 0) ~= 0 then
-                    HUDHearts_StartUpdateLoop()
+                    --HUDHearts_StartUpdateLoop()
                     WristPockets_StartUpdateLoop()
                 end
 
@@ -1999,7 +1985,7 @@ if GlobalSys:CommandLineCheck("-novr") then
 
     function PlayerDied()
         SendToServerConsole("unpause")
-        HUDHearts_StopUpdateLoop()
+        --HUDHearts_StopUpdateLoop()
         WristPockets_StopUpdateLoop()
         SendToConsole("disable_flashlight")
     end
@@ -2007,16 +1993,13 @@ if GlobalSys:CommandLineCheck("-novr") then
     function GoToMainMenu(a, b)
         if Convars:GetBool("vr_enable_fake_vr") then
             SendToConsole("vr_enable_fake_vr 0;vr_enable_fake_vr 0")
-            SendToConsole("setpos_exact 757 -80 6")
+            SendToConsole("setpos_exact 817 -80 6")
         else
-            SendToConsole("setpos_exact 757 -80 -26")
+            SendToConsole("setpos_exact 817 -80 -26")
         end
         SendToConsole("setang_exact 0.4 0 0")
+        SendToConsole("mouse_disableinput 0")
         SendToConsole("hidehud 96")
-        print("[GameMenu] main_menu_mode")
-        Entities:GetLocalPlayer():SetThink(function()
-            SendToConsole("gameui_preventescape;gameui_allowescapetoshow;gameui_activate")
-        end, "SetGameUIState", 0.1)
     end
 
     function MoveFreely(a, b)
